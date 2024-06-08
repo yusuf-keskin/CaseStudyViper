@@ -198,6 +198,15 @@
                 <constraint firstAttribute="bottom" secondItem="NdV-W2-WlP" secondAttribute="bottom" id="pnm-zd-mtR"/>
             </constraints>
             <size key="customSize" width="582" height="184"/>
+            <connections>
+                <outlet property="discountRateLabel" destination="Eli-e9-pyt" id="hP3-wu-ici"/>
+                <outlet property="discountedPriceLabel" destination="75Y-9d-mBm" id="6fa-lv-CzJ"/>
+                <outlet property="originalPriceLabel" destination="t5S-x7-95X" id="nvs-Uw-tFV"/>
+                <outlet property="productImageView" destination="FK4-LF-DxE" id="Lf0-fC-has"/>
+                <outlet property="productTitleLabel" destination="nl0-8X-Enn" id="IVD-ZS-AtK"/>
+                <outlet property="ratingView" destination="PNK-Hd-zDp" id="NAE-PP-xyJ"/>
+                <outlet property="vendorNameLabel" destination="V5v-tU-kTC" id="gTL-wM-H6a"/>
+            </connections>
             <point key="canvasLocation" x="190.83969465648855" y="6.3380281690140849"/>
         </collectionViewCell>
     </objects>

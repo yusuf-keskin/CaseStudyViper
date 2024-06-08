@@ -100,17 +100,16 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        //let promotedProduct = sponsoredProducts[indexPath.item]
-        let regularProduct = regularPoducts[indexPath.item]
-        
-        //TODO: Implement cell configures
         
         if collectionView == regularProductsCollectionView {
+            let regularProduct = regularPoducts[indexPath.item]
             let cell = regularProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "RegularProductsCollectionViewCell", for:indexPath) as! RegularProductsCollectionViewCell
-            
+            cell.setupCell(regularProduct: regularProduct)
             return cell
         } else if collectionView == sponsoredProductsCollectionView {
+            let sponsoredProduct = sponsoredProducts[indexPath.item]
             let cell = sponsoredProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "SponsoredProductsCollectionViewCell", for:indexPath) as! SponsoredProductsCollectionViewCell
+            cell.setupCellWith(sponsoredProduct: sponsoredProduct)
             return cell
         } else {
             return UICollectionViewCell()
