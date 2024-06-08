@@ -11,18 +11,42 @@ class ProductsViewController: UIViewController {
     private var regularPoducts = [Product]()
     private var sponsoredProducts = [Product]()
     
-    //TODO: Build real collectionview uı
+    private var attentionLabel : UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Bu ürünleri gördünüz mü?"
+        label.textColor = .darkGray
+        label.font = UIFont(name: "Avenir-Heavy", size: 16)
+        return label
+    }()
+    
     private var sponsoredProductsCollectionView : UICollectionView = {
-        let collectionView = UICollectionView()
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 2
+        layout.minimumLineSpacing = 2
+        layout.scrollDirection = .horizontal
+        layout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return UICollectionView()
+        let regularProductCellNib = UINib(nibName: "SponsoredProductsCollectionViewCell", bundle: nil)
+        collectionView.register(regularProductCellNib, forCellWithReuseIdentifier: "SponsoredProductsCollectionViewCell")
+        return collectionView
     }()
     
     //TODO: Build real collectionview uı
     private var regularProductsCollectionView : UICollectionView = {
-        let collectionView = UICollectionView()
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 4
+        layout.minimumLineSpacing = 4
+        layout.scrollDirection = .vertical
+        layout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return UICollectionView()
+        collectionView.backgroundColor = #colorLiteral(red: 0.9601089015, green: 0.9601089015, blue: 0.9601089015, alpha: 1)
+        
+        let sponsoredProductCellNib = UINib(nibName: "RegularProductsCollectionViewCell", bundle: nil)
+        collectionView.register(sponsoredProductCellNib, forCellWithReuseIdentifier: "RegularProductsCollectionViewCell")
+        return collectionView
     }()
     
     lazy var presenter  : ProductsPresenter = .init(interactor: ProductsInteractor(), view: self)
@@ -30,6 +54,7 @@ class ProductsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         sponsoredProductsCollectionView.delegate = self
         sponsoredProductsCollectionView.dataSource = self
         regularProductsCollectionView.delegate = self
@@ -41,32 +66,83 @@ class ProductsViewController: UIViewController {
     private func addSubviews() {
         view.addSubview(sponsoredProductsCollectionView)
         view.addSubview(regularProductsCollectionView)
+        view.addSubview(attentionLabel)
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        attentionLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        attentionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        attentionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        sponsoredProductsCollectionView.topAnchor.constraint(equalTo: attentionLabel.bottomAnchor, constant: 5).isActive = true
+        sponsoredProductsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        sponsoredProductsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        sponsoredProductsCollectionView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45).isActive = true
+        
+        regularProductsCollectionView.topAnchor.constraint(equalTo: sponsoredProductsCollectionView.bottomAnchor).isActive = true
+        regularProductsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        regularProductsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        regularProductsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    private func slide() {
+        
+    }
+    
+    
 }
 
-extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDataSource {
+extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        collectionView == sponsoredProductsCollectionView ? sponsoredProducts.count : regularPoducts.count
+        collectionView == regularProductsCollectionView ? regularPoducts.count : sponsoredProducts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let promotedProduct = sponsoredProducts[indexPath.item]
+        //let promotedProduct = sponsoredProducts[indexPath.item]
         let regularProduct = regularPoducts[indexPath.item]
         
         //TODO: Implement cell configures
         
+        if collectionView == regularProductsCollectionView {
+            let cell = regularProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "RegularProductsCollectionViewCell", for:indexPath) as! RegularProductsCollectionViewCell
+            
+            return cell
+        } else if collectionView == sponsoredProductsCollectionView {
+            let cell = sponsoredProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "SponsoredProductsCollectionViewCell", for:indexPath) as! SponsoredProductsCollectionViewCell
+            return cell
+        } else {
+            return UICollectionViewCell()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return UICollectionViewCell()
+        if collectionView == regularProductsCollectionView {
+            let width = collectionView.bounds.size.width/2 - 10
+            let height = width * 2
+            return CGSize(width: width, height: height)
+        } else if collectionView == sponsoredProductsCollectionView {
+            let width = collectionView.bounds.size.width - 10
+            let height = width / 1.8
+            return CGSize(width: width, height: height)
+        }
+        return CGSize()
     }
 }
 
 extension ProductsViewController : ProductsViewInputs {
     func configure() {}
-   
-    @MainActor
+    
+    
     func reloadCollectionViews(regularProducts : [Product], sponsoredProducts: [Product]) {
-        self.sponsoredProducts = sponsoredProducts
-        self.regularPoducts = regularProducts
+        DispatchQueue.main.async {
+            self.sponsoredProducts = sponsoredProducts
+            self.regularPoducts = regularProducts
+            self.regularProductsCollectionView.reloadData()
+            self.sponsoredProductsCollectionView.reloadData()
+        }
         
         //TODO: Reload collection view controllers here
     }
