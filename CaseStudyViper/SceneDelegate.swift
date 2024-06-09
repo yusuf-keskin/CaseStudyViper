@@ -17,10 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appWindow = UIWindow(windowScene: windowScene)
         
         let searchModule = ProductsRouter.createModule()
-        let homeNavigationController = UINavigationController(rootViewController: searchModule)
-        
-        
-        
+            
         appWindow.rootViewController = searchModule
         window = appWindow
         window?.makeKeyAndVisible()

@@ -8,21 +8,24 @@
 import UIKit
 
 class ProductsRouter :ProductsRouterProtocol{
+
     
     func routeToDetailsPageOf(product: Product) {
-        let postVC = UIViewController()
-        postVC.view.backgroundColor = .red
-        entryPoint?.present(postVC, animated: true)
+        let postVC = ProductDetailsVCViewController()
+        postVC.view.backgroundColor = .white
+        entryPoint?.pushViewController(postVC, animated: true)
     }
     
     
     // MARK: - Definitions
-    weak var entryPoint: UIViewController?
+    weak var entryPoint: UINavigationController?
     
     // MARK: - Create Module
-    static func createModule() -> UIViewController {
+    static func createModule() -> UINavigationController {
+        
         
         let view = ProductsViewController()
+        let navController = UINavigationController(rootViewController: view)
         let router = ProductsRouter()
         let presenter = ProductsPresenter()
         let interactor = ProductsInteractor(networkManager: NetworkManager.shared)
@@ -32,9 +35,9 @@ class ProductsRouter :ProductsRouterProtocol{
         presenter.interactor = interactor
         presenter.router = router
         interactor.presenter = presenter
-        router.entryPoint = view
-        
-        return view
+        router.entryPoint = navController
+
+        return navController
     }
 }
 

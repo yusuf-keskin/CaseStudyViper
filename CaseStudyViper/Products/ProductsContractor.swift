@@ -45,8 +45,8 @@ protocol ProductsPresentorToInteractorProtocol: AnyObject {
 
 // Router Will Confirm
 protocol ProductsRouterProtocol {
-    var entryPoint :  UIViewController? {get set}
-    static func createModule() -> UIViewController
+    var entryPoint :  UINavigationController? {get set}
+    static func createModule() -> UINavigationController
     func routeToDetailsPageOf(product: Product)
 }
 
