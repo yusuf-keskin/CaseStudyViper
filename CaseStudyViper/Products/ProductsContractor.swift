@@ -16,7 +16,8 @@ protocol ProductsInteractorOutputs {
 //Products presenter interface
 protocol ProductsViewInputs {
     func configure()
-    func reloadCollectionViews(regularProducts : [Product], sponsoredProducts: [Product])
+    func reloadCollectionViewsWith(regularProducts : [Product], sponsoredProducts: [Product])
+    func reloadCollectionViewsWith(error: Error)
     func setupTableViewCell()
     func indicatorView(animate: Bool)
     func sortByTitle()
@@ -25,7 +26,6 @@ protocol ProductsViewInputs {
 
 protocol ProductsViewPresenterOutputs {
     func viewDidLoad()
-    func onCloseButtonTapped()
-    func onReachBottom()
-    func onTapCell()
+    func onReachToListEnd()
+    func onTapCell(product : Product)
 }

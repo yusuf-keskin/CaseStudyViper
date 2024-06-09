@@ -44,4 +44,17 @@ extension Double {
         }
         return ""
     }
+    
+    func formatToPercentage() -> String {
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 2
+        formatter.numberStyle = .decimal
+        
+        let string = String(self)
+        
+        if let string = formatter.string(for: self) {
+            return string                             // correctly results in “1,427.30” in US; “1.427,30” in Germany
+        }
+        return ""
+    }
 }

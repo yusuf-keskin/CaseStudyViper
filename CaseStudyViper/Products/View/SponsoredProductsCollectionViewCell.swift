@@ -23,17 +23,30 @@ class SponsoredProductsCollectionViewCell: UICollectionViewCell {
     }
     
     func setupCellWith(sponsoredProduct: Product) {
-        let url = URL(string: sponsoredProduct.image)
-        productImageView.kf.setImage(with: url)
+        if let urlString = sponsoredProduct.image {
+            if  let url = URL(string:urlString) {
+                productImageView.kf.setImage(with: url)
+            }
+        }
+
         productTitleLabel.text = sponsoredProduct.title
-        vendorNameLabel.text = sponsoredProduct.sellerName
-        let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(sponsoredProduct.price)")
-        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
-        originalPriceLabel.attributedText = attributeString
+        if let price = sponsoredProduct.price {
+            let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(price)")
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
+            originalPriceLabel.attributedText = attributeString
+        }
         discountedPriceLabel.text = sponsoredProduct.instantDiscountPrice?.formatToCartPrice()
         setStarsFor(rating: sponsoredProduct.rate)
+        
+        guard let price = sponsoredProduct.price else { return }
+        guard let discountedPrice = sponsoredProduct.instantDiscountPrice else { return }
+        let discountRate = (((discountedPrice / price) - 1) * -100).rounded().formatToPercentage()
+        discountRateLabel.text = "%\(discountRate)"
     }
 
+    override func prepareForReuse() {
+        productImageView.kf.cancelDownloadTask()
+    }
     
     private func setStarsFor(rating: Double?){
         guard let rating = rating else { return }

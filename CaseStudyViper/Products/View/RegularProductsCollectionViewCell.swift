@@ -27,18 +27,29 @@ class RegularProductsCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        productImageView.image = nil
+    }
     
     @MainActor
     func setupCell(regularProduct:Product){
-        let url = URL(string: regularProduct.image)
-        productImageView.kf.setImage(with: url)
+        if let urlString = regularProduct.image {
+            if  let url = URL(string:urlString) {
+                productImageView.kf.setImage(with: url)
+            }
+        }
         productTitleLabel.text = regularProduct.title
         setStarsFor(rating: regularProduct.rate)
-        let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(regularProduct.price)")
-        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
-        defaultPriceLabel.attributedText = attributeString
-        let percentageDiscounterPrice = Double(round(100 * (regularProduct.price * 0.96)) / 100)
-        percentageDiscountedPriceLabel.text = percentageDiscounterPrice.formatToCartPrice()
+        if let price = regularProduct.price {
+            let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(price)")
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
+            defaultPriceLabel.attributedText = attributeString
+        }
+        if let unwrappedRegularPrice = regularProduct.price {
+            let percentageDiscounterPrice = Double(round(100 * (unwrappedRegularPrice * 0.96)) / 100)
+            percentageDiscountedPriceLabel.text = percentageDiscounterPrice.formatToCartPrice()
+        }
         if let instantDiscountPrice = regularProduct.instantDiscountPrice {
             discountedAtCartPriceLabel.text = instantDiscountPrice.formatToCartPrice()
         }
@@ -49,7 +60,14 @@ class RegularProductsCollectionViewCell: UICollectionViewCell {
     private func setStarsFor(rating: Double?){
         guard let rating = rating else { return }
         guard rating < 6 else  { return }
-        guard rating >= 0 else { return }
+        guard rating > 0 else {
+            guard let views = ratingView.arrangedSubviews as? [UIImageView] else { return }
+            for view in views {
+                view.image = UIImage(systemName: "star")
+                view.tintColor = .systemYellow
+            }
+            return
+        }
         
         let ratinInt = Int(rating)
         

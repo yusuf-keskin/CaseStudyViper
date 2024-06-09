@@ -8,4 +8,3 @@
 import Foundation
 import UIKit
 
-let PRODUCT_IMAGE = UIImage(named: "apple-iphone-13-pro-256-gb.jpg")

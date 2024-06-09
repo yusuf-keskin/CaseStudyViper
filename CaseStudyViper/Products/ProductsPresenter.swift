@@ -8,36 +8,38 @@
 import Foundation
 
 class ProductsPresenter: ProductsViewPresenterOutputs {
+    
     let interactor : ProductsInteractor
     let view : ProductsViewInputs
+    
+    private var nextPage : String = "1"
+    private var currentPage : String = "0"
     
     init(interactor: ProductsInteractor, view: ProductsViewInputs) {
         self.interactor = interactor
         self.view = view
     }
-    
-    
-    func onTapCell() {}
-    
-    private func fetchProductsList() {
-        Task {
-            //TODO: Handle error here:
-            do {
-                guard let url = try? PRODUCTS_URL_STRING else { return }
-                let productsList = try await interactor.fetchProducts(url: url)
 
-                view.reloadCollectionViews(regularProducts: productsList.regularProducts, sponsoredProducts: productsList.sponsoredProducts)
+    func viewDidLoad() {
+        fetchProducts()
+    }
+        
+    func onReachToListEnd() {
+        fetchProducts()
+    }
+    
+    func onTapCell(product: Product) {
+        dump(product)
+    }
+    
+    private func fetchProducts() {
+        Task {
+            do {
+                let (regularProducts, sponsoredProducts) = try await interactor.fetchProductsList()
+                view.reloadCollectionViewsWith(regularProducts: regularProducts, sponsoredProducts: sponsoredProducts)
             } catch (let error ){
-                //TODO: Handle error (maybe indicator add?)
+                view.reloadCollectionViewsWith(error: error)
             }
         }
     }
-    
-    func viewDidLoad() {
-        fetchProductsList()
-    }
-    
-    func onCloseButtonTapped() {}
-    
-    func onReachBottom() {}
 }

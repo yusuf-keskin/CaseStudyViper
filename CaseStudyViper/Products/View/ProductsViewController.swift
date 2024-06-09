@@ -43,7 +43,6 @@ class ProductsViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = #colorLiteral(red: 0.9601089015, green: 0.9601089015, blue: 0.9601089015, alpha: 1)
-        
         let sponsoredProductCellNib = UINib(nibName: "RegularProductsCollectionViewCell", bundle: nil)
         collectionView.register(sponsoredProductCellNib, forCellWithReuseIdentifier: "RegularProductsCollectionViewCell")
         return collectionView
@@ -54,7 +53,6 @@ class ProductsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
         sponsoredProductsCollectionView.delegate = self
         sponsoredProductsCollectionView.dataSource = self
         regularProductsCollectionView.delegate = self
@@ -86,12 +84,6 @@ class ProductsViewController: UIViewController {
         regularProductsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         regularProductsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
-    
-    private func slide() {
-        
-    }
-    
-    
 }
 
 extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -103,12 +95,16 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
         
         if collectionView == regularProductsCollectionView {
             let regularProduct = regularPoducts[indexPath.item]
-            let cell = regularProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "RegularProductsCollectionViewCell", for:indexPath) as! RegularProductsCollectionViewCell
+            let cell = regularProductsCollectionView
+                .dequeueReusableCell(withReuseIdentifier: "RegularProductsCollectionViewCell",
+                                     for: indexPath) as! RegularProductsCollectionViewCell
             cell.setupCell(regularProduct: regularProduct)
             return cell
         } else if collectionView == sponsoredProductsCollectionView {
             let sponsoredProduct = sponsoredProducts[indexPath.item]
-            let cell = sponsoredProductsCollectionView.dequeueReusableCell(withReuseIdentifier: "SponsoredProductsCollectionViewCell", for:indexPath) as! SponsoredProductsCollectionViewCell
+            let cell = sponsoredProductsCollectionView
+                .dequeueReusableCell(withReuseIdentifier: "SponsoredProductsCollectionViewCell",
+                                     for:indexPath) as! SponsoredProductsCollectionViewCell
             cell.setupCellWith(sponsoredProduct: sponsoredProduct)
             return cell
         } else {
@@ -117,7 +113,6 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         if collectionView == regularProductsCollectionView {
             let width = collectionView.bounds.size.width/2 - 10
             let height = width * 2
@@ -129,16 +124,38 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
         }
         return CGSize()
     }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if collectionView == regularProductsCollectionView {
+            if indexPath.item == regularPoducts.count - 1  {  //numberofitem count
+                presenter.onReachToListEnd()
+            }
+        } else if collectionView == sponsoredProductsCollectionView {
+            if indexPath.item == sponsoredProducts.count - 1  {  //numberofitem count
+                presenter.onReachToListEnd()
+            }
+        } else {
+            return
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView == regularProductsCollectionView ? presenter.onTapCell(product: regularPoducts[indexPath.item]) : presenter.onTapCell(product: sponsoredProducts[indexPath.item])
+    }
 }
 
 extension ProductsViewController : ProductsViewInputs {
+    
+    func reloadCollectionViewsWith(error: any Error) {
+        
+    }
+    
     func configure() {}
-    
-    
-    func reloadCollectionViews(regularProducts : [Product], sponsoredProducts: [Product]) {
+
+    func reloadCollectionViewsWith(regularProducts : [Product], sponsoredProducts: [Product]) {
         DispatchQueue.main.async {
-            self.sponsoredProducts = sponsoredProducts
-            self.regularPoducts = regularProducts
+            self.sponsoredProducts.append(contentsOf: sponsoredProducts)
+            self.regularPoducts.append(contentsOf: regularProducts)
             self.regularProductsCollectionView.reloadData()
             self.sponsoredProductsCollectionView.reloadData()
         }
@@ -151,6 +168,4 @@ extension ProductsViewController : ProductsViewInputs {
     func indicatorView(animate: Bool) {}
     
     func sortByTitle() {}
-    
-    
 }
