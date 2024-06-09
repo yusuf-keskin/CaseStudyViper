@@ -11,6 +11,8 @@ class ProductsViewController: UIViewController {
     private var regularPoducts = [Product]()
     private var sponsoredProducts = [Product]()
     
+    var presenter : ProductsViewToPresenterProtocol?
+    
     private var attentionLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -48,7 +50,7 @@ class ProductsViewController: UIViewController {
         return collectionView
     }()
     
-    lazy var presenter  : ProductsPresenter = .init(interactor: ProductsInteractor(), view: self)
+    //lazy var presenter  : ProductsPresenter = .init(interactor: ProductsInteractor(), view: self)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +60,12 @@ class ProductsViewController: UIViewController {
         regularProductsCollectionView.delegate = self
         regularProductsCollectionView.dataSource = self
         addSubviews()
-        presenter.viewDidLoad()
+        presenter?.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
     }
     
     private func addSubviews() {
@@ -128,11 +135,11 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if collectionView == regularProductsCollectionView {
             if indexPath.item == regularPoducts.count - 1  {  //numberofitem count
-                presenter.onReachToListEnd()
+                presenter?.onReachToListEnd()
             }
         } else if collectionView == sponsoredProductsCollectionView {
             if indexPath.item == sponsoredProducts.count - 1  {  //numberofitem count
-                presenter.onReachToListEnd()
+                presenter?.onReachToListEnd()
             }
         } else {
             return
@@ -140,11 +147,11 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView == regularProductsCollectionView ? presenter.onTapCell(product: regularPoducts[indexPath.item]) : presenter.onTapCell(product: sponsoredProducts[indexPath.item])
+        collectionView == regularProductsCollectionView ? presenter?.onTapCell(product: regularPoducts[indexPath.item]) : presenter?.onTapCell(product: sponsoredProducts[indexPath.item])
     }
 }
 
-extension ProductsViewController : ProductsViewInputs {
+extension ProductsViewController : ProductsPresenterToViewProtocol {
     
     func reloadCollectionViewsWith(error: any Error) {
         

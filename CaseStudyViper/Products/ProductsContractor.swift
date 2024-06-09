@@ -6,26 +6,47 @@
 //
 
 import Foundation
+import UIKit
 
-//Products view interface
-protocol ProductsInteractorOutputs {
-    func onSuccessSearch()
-    func onErrorSearch()
+protocol NetworkManagerProtocol {
+    func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T
 }
 
-//Products presenter interface
-protocol ProductsViewInputs {
-    func configure()
+// View will confirm
+protocol ProductsPresenterToViewProtocol: AnyObject {
+    var presenter : ProductsViewToPresenterProtocol? {get set}
     func reloadCollectionViewsWith(regularProducts : [Product], sponsoredProducts: [Product])
     func reloadCollectionViewsWith(error: Error)
     func setupTableViewCell()
-    func indicatorView(animate: Bool)
-    func sortByTitle()
 }
 
-
-protocol ProductsViewPresenterOutputs {
+//Presenter will confirm
+protocol ProductsViewToPresenterProtocol: AnyObject {
+    var interactor : ProductsPresentorToInteractorProtocol? {get set}
+    var view : ProductsPresenterToViewProtocol? {get set}
+    var router : ProductsRouterProtocol? {get set}
+    
     func viewDidLoad()
     func onReachToListEnd()
     func onTapCell(product : Product)
+}
+
+//Presenter will confirm
+protocol ProductsInteractorToPresentorProtocol: AnyObject {
+    func interactorDidDownloadProducts(regularProducts : [Product], sponsoredProducts: [Product])
+    func interactorDidDownloadProducts(with error: Error)
+}
+
+//Interactor will confirm
+protocol ProductsPresentorToInteractorProtocol: AnyObject {
+    var presenter : ProductsInteractorToPresentorProtocol? {get set}
+    func fetchProductsList() 
+}
+
+
+// Router Will Confirm
+protocol ProductsRouterProtocol {
+    var entryPoint :  UINavigationController? {get set}
+    func startExecution() -> ProductsRouter
+    func routeTo()
 }

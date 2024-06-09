@@ -7,39 +7,39 @@
 
 import Foundation
 
-class ProductsPresenter: ProductsViewPresenterOutputs {
+class ProductsPresenter: ProductsViewToPresenterProtocol {
     
-    let interactor : ProductsInteractor
-    let view : ProductsViewInputs
+    var interactor : ProductsPresentorToInteractorProtocol?
+    weak var view : ProductsPresenterToViewProtocol?
+    var router : ProductsRouterProtocol?
     
     private var nextPage : String = "1"
     private var currentPage : String = "0"
     
-    init(interactor: ProductsInteractor, view: ProductsViewInputs) {
-        self.interactor = interactor
-        self.view = view
-    }
-
     func viewDidLoad() {
         fetchProducts()
     }
-        
+    
     func onReachToListEnd() {
         fetchProducts()
     }
     
     func onTapCell(product: Product) {
+        router?.routeTo()
         dump(product)
     }
     
     private func fetchProducts() {
-        Task {
-            do {
-                let (regularProducts, sponsoredProducts) = try await interactor.fetchProductsList()
-                view.reloadCollectionViewsWith(regularProducts: regularProducts, sponsoredProducts: sponsoredProducts)
-            } catch (let error ){
-                view.reloadCollectionViewsWith(error: error)
-            }
-        }
+        interactor?.fetchProductsList()
+    }
+}
+
+extension ProductsPresenter: ProductsInteractorToPresentorProtocol {
+    func interactorDidDownloadProducts(with error: any Error) {
+        view?.reloadCollectionViewsWith(error: error)
+    }
+    
+    func interactorDidDownloadProducts(regularProducts: [Product], sponsoredProducts: [Product]) {
+        view?.reloadCollectionViewsWith(regularProducts: regularProducts, sponsoredProducts: sponsoredProducts)
     }
 }

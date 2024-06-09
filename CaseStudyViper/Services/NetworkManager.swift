@@ -7,9 +7,14 @@
 
 import Foundation
 
-class NetworkManager {
-    static func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T {
-        let request = URLRequest(url: url)
+class NetworkManager: NetworkManagerProtocol{
+    
+    static let shared = NetworkManager()
+    
+    private init(){}
+    
+    func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T {
+
         let session = URLSession.shared
         
         do {

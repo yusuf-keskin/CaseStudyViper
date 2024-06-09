@@ -7,14 +7,21 @@
 
 import Foundation
 
-class ProductsInteractor {
+class ProductsInteractor: ProductsPresentorToInteractorProtocol {
     
     private var nextPage : String = "1"
     private var currentPage : String = "0"
     
+    weak var presenter : ProductsInteractorToPresentorProtocol?
+    let networkManager : NetworkManagerProtocol
+    
+    init(networkManager: NetworkManagerProtocol) {
+        self.networkManager = networkManager
+    }
+    
     private func fetchProducts(url: URL) async throws -> ProductsCollectionModel {
         do {
-            let productList = try await NetworkManager.download(type:ProductsCollectionModel.self, from: url)
+            let productList = try await NetworkManager.shared.download(type:ProductsCollectionModel.self, from: url)
             return productList
         } catch (let error) {
             throw ProductsListError.downloadError(receivedError: error)
@@ -22,7 +29,7 @@ class ProductsInteractor {
     }  
     
     private func getProductsListLink(page : String ) -> URL? {
-        guard let pageInt = Int(page) else { return nil}
+        guard let _ = Int(page) else { return nil}
         var components = URLComponents()
         components.scheme = "https"
         components.host = "private-d3ae2-n11case.apiary-mock.com"
@@ -30,36 +37,37 @@ class ProductsInteractor {
         return components.url!
     }
     
-    func fetchProductsList() async throws -> ([Product],[Product]) {
-
-            do {
-                if currentPage == nextPage { throw ProductsListError.lastPage }
-                guard let url = getProductsListLink(page: nextPage) else { throw ProductsListError.urlError(receivedError: nil) }
-                print("Network reguest")
-                let productsList = try await fetchProducts(url: url)
-                var regularProductsArray = [Product]()
-                var sponsoredProductsArray = [Product]()
-                
-                if let unwappedRegularProducts = productsList.regularProducts {
-                    regularProductsArray = unwappedRegularProducts
+    func fetchProductsList() {
+            Task {
+                do {
+                    if currentPage == nextPage { throw ProductsListError.lastPage }
+                    guard let url = getProductsListLink(page: nextPage) else { throw ProductsListError.urlError(receivedError: nil) }
+                    print("Network reguest")
+                    let productsList = try await fetchProducts(url: url)
+                    var regularProductsArray = [Product]()
+                    var sponsoredProductsArray = [Product]()
+                    
+                    if let unwappedRegularProducts = productsList.regularProducts {
+                        regularProductsArray = unwappedRegularProducts
+                    }
+                    
+                    if let unwappedSponsoredProducts = productsList.sponsoredProducts {
+                        sponsoredProductsArray = unwappedSponsoredProducts
+                    }
+                    
+                    if let newNextPage = productsList.nextPage {
+                        nextPage = newNextPage
+                    }
+                    
+                    if let newCurentPage = productsList.page {
+                        currentPage = newCurentPage
+                    }
+                    
+                    presenter?.interactorDidDownloadProducts(regularProducts: regularProductsArray, sponsoredProducts: sponsoredProductsArray)
+                } catch (let error ){
+                    presenter?.interactorDidDownloadProducts(with: error)
                 }
-                
-                if let unwappedSponsoredProducts = productsList.sponsoredProducts {
-                    sponsoredProductsArray = unwappedSponsoredProducts
-                }
-                
-                if let newNextPage = productsList.nextPage {
-                    nextPage = newNextPage
-                }
-                
-                if let newCurentPage = productsList.page {
-                    currentPage = newCurentPage
-                }
-                
-                return (regularProductsArray,sponsoredProductsArray)
-            } catch (let error ){
-                //TODO: Handle error (maybe indicator add?)
             }
-            return ([Product](), [Product]())
     }
 }
+
