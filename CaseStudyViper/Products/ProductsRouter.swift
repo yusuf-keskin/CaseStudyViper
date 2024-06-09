@@ -7,35 +7,34 @@
 
 import UIKit
 
-
-struct ProductsRouter: ProductsRouterProtocol  {
-    var entryPoint: UINavigationController?
+class ProductsRouter :ProductsRouterProtocol{
     
-    var navigationController: UINavigationController? = UINavigationController()
+    func routeToDetailsPageOf(product: Product) {
+        let postVC = UIViewController()
+        postVC.view.backgroundColor = .red
+        entryPoint?.present(postVC, animated: true)
+    }
     
-    func startExecution() -> ProductsRouter {
-        var router = ProductsRouter()
+    
+    // MARK: - Definitions
+    weak var entryPoint: UIViewController?
+    
+    // MARK: - Create Module
+    static func createModule() -> UIViewController {
+        
         let view = ProductsViewController()
+        let router = ProductsRouter()
         let presenter = ProductsPresenter()
         let interactor = ProductsInteractor(networkManager: NetworkManager.shared)
-
-        let navController = UINavigationController(rootViewController: view)
-        
         
         view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.router = router
         interactor.presenter = presenter
-
+        router.entryPoint = view
         
-        router.entryPoint = navController
-        return router
+        return view
     }
-    
-    
-    func routeTo(){
-        
-    }
-    
 }
+

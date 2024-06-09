@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import UIKit
 
 
  func getProductsListLink(page : String ) -> URL? {
@@ -17,3 +17,4 @@ import Foundation
     components.path = "/listing/\(page)"
     return components.url!
     }
+

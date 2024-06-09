@@ -25,7 +25,7 @@ class ProductsPresenter: ProductsViewToPresenterProtocol {
     }
     
     func onTapCell(product: Product) {
-        router?.routeTo()
+        router?.routeToDetailsPageOf(product: product)
         dump(product)
     }
     
