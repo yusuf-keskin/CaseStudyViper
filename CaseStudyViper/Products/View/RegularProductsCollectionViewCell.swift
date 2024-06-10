@@ -42,8 +42,7 @@ class RegularProductsCollectionViewCell: UICollectionViewCell {
         productTitleLabel.text = regularProduct.title
         setStarsFor(rating: regularProduct.rate)
         if let price = regularProduct.price {
-            let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(price)")
-            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
+            let attributeString = crateLinedStringFromDouble(price: price)
             defaultPriceLabel.attributedText = attributeString
         }
         if let unwrappedRegularPrice = regularProduct.price {

@@ -9,19 +9,17 @@ import UIKit
 
 class ProductsRouter :ProductsRouterProtocol{
 
-    
-    func routeToDetailsPageOf(product: Product) {
-        let postVC = ProductDetailsVCViewController()
+    func routeToDetailsPageOf(productId: String) {
+        let postVC = ProductDetailsRouter().createModuleWith(productId: productId)
         postVC.view.backgroundColor = .white
         entryPoint?.pushViewController(postVC, animated: true)
     }
-    
     
     // MARK: - Definitions
     weak var entryPoint: UINavigationController?
     
     // MARK: - Create Module
-    static func createModule() -> UINavigationController {
+    func createModule() -> UINavigationController {
         
         
         let view = ProductsViewController()

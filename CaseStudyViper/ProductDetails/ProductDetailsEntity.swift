@@ -12,7 +12,7 @@ import Foundation
 struct ProductDetailsModel: Codable {
     let title, description: String
     let images: [String]
-    let price, instantDiscountPrice: Int
+    let price, instantDiscountPrice: Double?
     let rate: Double
     let sellerName: String
 }

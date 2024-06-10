@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let appWindow = UIWindow(windowScene: windowScene)
         
-        let searchModule = ProductsRouter.createModule()
+        let searchModule = ProductsRouter().createModule()
             
         appWindow.rootViewController = searchModule
         window = appWindow

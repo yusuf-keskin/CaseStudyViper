@@ -31,17 +31,14 @@ class SponsoredProductsCollectionViewCell: UICollectionViewCell {
 
         productTitleLabel.text = sponsoredProduct.title
         if let price = sponsoredProduct.price {
-            let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: "\(price)")
-            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSRange(location: 0, length: attributeString.length))
+            let attributeString = crateLinedStringFromDouble(price: price)
             originalPriceLabel.attributedText = attributeString
         }
         discountedPriceLabel.text = sponsoredProduct.instantDiscountPrice?.formatToCartPrice()
         setStarsFor(rating: sponsoredProduct.rate)
         
-        guard let price = sponsoredProduct.price else { return }
-        guard let discountedPrice = sponsoredProduct.instantDiscountPrice else { return }
-        let discountRate = (((discountedPrice / price) - 1) * -100).rounded().formatToPercentage()
-        discountRateLabel.text = "%\(discountRate)"
+        guard let discountRate = createDiscountRateLabelString(price: sponsoredProduct.price, discountedPrice: sponsoredProduct.instantDiscountPrice) else { return }
+        discountRateLabel.text = discountRate
     }
 
     override func prepareForReuse() {

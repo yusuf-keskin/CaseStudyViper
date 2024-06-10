@@ -8,20 +8,18 @@
 import Foundation
 import UIKit
 
-protocol NetworkManagerProtocol {
-    func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T
-}
 
-// View will confirm
+//MARK: - View will confirm to:
+///Presenter to view communication
 protocol ProductsPresenterToViewProtocol: AnyObject {
     var presenter : ProductsViewToPresenterProtocol? {get set}
     func reloadCollectionViewsWith(regularProducts : [Product], sponsoredProducts: [Product])
     func reloadCollectionViewsWith(error: Error)
-    func setupTableViewCell()
 }
 
-//Presenter will confirm
+//MARK: - Presenter will confirm to:
 protocol ProductsViewToPresenterProtocol: AnyObject {
+    ///View to presenter communication
     var interactor : ProductsPresentorToInteractorProtocol? {get set}
     var view : ProductsPresenterToViewProtocol? {get set}
     var router : ProductsRouterProtocol? {get set}
@@ -31,22 +29,24 @@ protocol ProductsViewToPresenterProtocol: AnyObject {
     func onTapCell(product : Product)
 }
 
-//Presenter will confirm
+///Interactor to presenter communication
 protocol ProductsInteractorToPresentorProtocol: AnyObject {
-    func interactorDidDownloadProducts(regularProducts : [Product], sponsoredProducts: [Product])
-    func interactorDidDownloadProducts(with error: Error)
+    func interactorDid(regularProducts : [Product], sponsoredProducts: [Product])
+    func interactorDidDownloadWith(error: Error)
 }
 
-//Interactor will confirm
+//MARK: - Interactor will confirm to:
+///Presenter to interactor communication
 protocol ProductsPresentorToInteractorProtocol: AnyObject {
-    var presenter : ProductsInteractorToPresentorProtocol? {get set}
-    func fetchProductsList() 
+    //var presenter : ProductsInteractorToPresentorProtocol? {get set}
+    func fetchProductsList()
 }
 
-// Router Will Confirm
+//MARK: - Router will confirm to:
+///Presenter to router communication
 protocol ProductsRouterProtocol {
     var entryPoint :  UINavigationController? {get set}
-    static func createModule() -> UINavigationController
-    func routeToDetailsPageOf(product: Product)
+    func createModule() -> UINavigationController
+    func routeToDetailsPageOf(productId: String) 
 }
 

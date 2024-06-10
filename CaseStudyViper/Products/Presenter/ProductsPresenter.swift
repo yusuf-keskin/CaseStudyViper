@@ -25,8 +25,9 @@ class ProductsPresenter: ProductsViewToPresenterProtocol {
     }
     
     func onTapCell(product: Product) {
-        router?.routeToDetailsPageOf(product: product)
-        dump(product)
+        guard let id = product.id else { return }
+        let idString = String(id)
+        router?.routeToDetailsPageOf(productId: idString)
     }
     
     private func fetchProducts() {
@@ -35,11 +36,11 @@ class ProductsPresenter: ProductsViewToPresenterProtocol {
 }
 
 extension ProductsPresenter: ProductsInteractorToPresentorProtocol {
-    func interactorDidDownloadProducts(with error: any Error) {
+    func interactorDidDownloadWith(error: any Error) {
         view?.reloadCollectionViewsWith(error: error)
     }
     
-    func interactorDidDownloadProducts(regularProducts: [Product], sponsoredProducts: [Product]) {
+    func interactorDid(regularProducts: [Product], sponsoredProducts: [Product]) {
         view?.reloadCollectionViewsWith(regularProducts: regularProducts, sponsoredProducts: sponsoredProducts)
     }
 }

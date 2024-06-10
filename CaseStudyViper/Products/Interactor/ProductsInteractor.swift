@@ -63,9 +63,9 @@ class ProductsInteractor: ProductsPresentorToInteractorProtocol {
                         currentPage = newCurentPage
                     }
                     
-                    presenter?.interactorDidDownloadProducts(regularProducts: regularProductsArray, sponsoredProducts: sponsoredProductsArray)
+                    presenter?.interactorDid(regularProducts: regularProductsArray, sponsoredProducts: sponsoredProductsArray)
                 } catch (let error ){
-                    presenter?.interactorDidDownloadProducts(with: error)
+                    presenter?.interactorDidDownloadWith(error: error)
                 }
             }
     }
