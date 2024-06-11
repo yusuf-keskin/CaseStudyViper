@@ -11,7 +11,7 @@ protocol NetworkManagerProtocol {
     func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T
 }
 
-class NetworkManager: NetworkManagerProtocol{
+final class NetworkManager: NetworkManagerProtocol{
     
     static let shared = NetworkManager()
     
