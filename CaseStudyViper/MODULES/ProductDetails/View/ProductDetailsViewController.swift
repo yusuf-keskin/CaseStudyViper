@@ -35,6 +35,11 @@ final class ProductDetailsViewController: UIViewController {
         presenter?.viewDidLoad()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = false
+    }
+    
     private func setCollectionView() {
         imagesCollectionView.register(UINib(nibName: "ImagesCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ImagesCollectionViewCell")
     }
@@ -134,17 +139,16 @@ extension ProductDetailsViewController : ProductDetailsPresenterToViewProtocol {
             setStarsFor(rating: productsDetails.rate)
             
             if let price = productsDetails.price {
-                let priceString = price.formatToCartPriceString()
-                let attributedText = crateLinedStringFrom(string: priceString)
-                originalPriceLabel.attributedText = attributedText
+                let priceString = price.createPriceString()
+                originalPriceLabel.attributedText = priceString.crateLinedString()
             }
             
             if let instantDiscountPrice = productsDetails.instantDiscountPrice {
-                let priceString = instantDiscountPrice.formatToCartPriceString()
+                let priceString = instantDiscountPrice.createPriceString()
                 percentDiscountedPriceLabel.text = priceString
                 
                 let chartDiscountedPrice = instantDiscountPrice - 150
-                chartDiscountedPriceLabel.text = chartDiscountedPrice.formatToCartPriceString()
+                chartDiscountedPriceLabel.text = chartDiscountedPrice.createPriceString()
             }
             
             guard let discountRate = createDiscountRateString(price: productsDetails.price, discountedPrice: productsDetails.instantDiscountPrice) else { return }

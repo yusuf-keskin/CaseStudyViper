@@ -30,11 +30,10 @@ final class SponsoredProductsCollectionViewCell: UICollectionViewCell {
 
         productTitleLabel.text = sponsoredProduct.title
         if let price = sponsoredProduct.price {
-            let priceString = price.formatToCartPriceString()
-            let attributeString = crateLinedStringFrom(string: priceString)
-            originalPriceLabel.attributedText = attributeString
+            let priceString = price.createPriceString()
+            originalPriceLabel.attributedText = priceString.crateLinedString()
         }
-        discountedPriceLabel.text = sponsoredProduct.instantDiscountPrice?.formatToCartPriceString()
+        discountedPriceLabel.text = sponsoredProduct.instantDiscountPrice?.createPriceString()
         setStarsFor(rating: sponsoredProduct.rate)
         
         guard let discountRate = createDiscountRateString(price: sponsoredProduct.price, discountedPrice: sponsoredProduct.instantDiscountPrice) else { return }

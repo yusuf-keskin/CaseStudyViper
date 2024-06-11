@@ -12,20 +12,18 @@ func createDiscountRateString(price: Double?, discountedPrice: Double?) -> Strin
     guard let price = price else { return nil }
     guard let discountedPrice = discountedPrice else { return nil }
     let discountRate = (((discountedPrice / price) - 1) * -100).rounded()
-    if discountRate <= 1 {
-        
+    if discountRate == 0{
+        return ""
     } else {
-        let rateString = discountRate.formatToPercentageString()
-        return "%\(rateString)"
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 2
+        formatter.numberStyle = .decimal
+        
+        if let rateString = formatter.string(for: discountRate) {
+            guard rateString != "" else { return "" }
+            return "%\(rateString)"
+        }
+        return ""
     }
-    return ""
 }
 
-func crateLinedStringFrom(string : String) -> NSAttributedString {
-    let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: string)
-    attributeString.addAttribute(
-        NSAttributedString.Key.strikethroughStyle,
-        value: 2,
-        range: NSRange(location: 0, length: attributeString.length))
-    return attributeString
-}

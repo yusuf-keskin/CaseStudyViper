@@ -38,20 +38,19 @@ final class RegularProductsCollectionViewCell: UICollectionViewCell {
         productTitleLabel.text = regularProduct.title
         setStarsFor(rating: regularProduct.rate)
         if let price = regularProduct.price {
-            let priceString = price.formatToCartPriceString()
-            let attributeString = crateLinedStringFrom(string: priceString)
-            defaultPriceLabel.attributedText = attributeString
+            let priceString = price.createPriceString()
+            defaultPriceLabel.attributedText = priceString.crateLinedString()
         }
         
         if let instantDiscountPrice = regularProduct.instantDiscountPrice {
-            instantDiscountedPriceLabel.text = instantDiscountPrice.formatToCartPriceString()
+            instantDiscountedPriceLabel.text = instantDiscountPrice.createPriceString()
             
             if let price = regularProduct.price {
                 if let discountRate = createDiscountRateString(price: price, discountedPrice: instantDiscountPrice) {
                     if discountRate == "" {
                         discountPercentageLabel.isHidden = true
                         defaultPriceLabel.isHidden = true
-                        instantDiscountedPriceLabel.text = price.formatToCartPriceString()
+                        instantDiscountedPriceLabel.text = price.createPriceString()
                     } else {
                         discountPercentageLabel.text = discountRate
                     }
