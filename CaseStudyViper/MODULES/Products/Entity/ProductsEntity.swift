@@ -7,23 +7,6 @@
 
 import Foundation
 
-enum NetworkingError : Error, LocalizedError {
-    case downloadError(receivedError: Error?)
-    case urlError(receivedError: Error?)
-    case lastPage
-    
-    var errorDescription: String {
-        switch self {
-            case .downloadError(let receivedError):
-                return "Download data from api has failed, error: \(String(describing: receivedError?.localizedDescription))"
-            case .urlError(let receivedError):
-                return "Creating url from string file has failed, error: \(String(describing: receivedError?.localizedDescription))"
-            case .lastPage:
-                return "No more data in the endpoint to load"
-        }
-    }
-}
-
 struct ProductsCollectionModel : Codable {
     let page : String?
     let nextPage : String?
