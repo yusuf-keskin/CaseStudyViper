@@ -1,5 +1,5 @@
 //
-//  ProductDetailsVCViewController.swift
+//  ProductDetailsViewController.swift
 //  CaseStudyViper
 //
 //  Created by YUSUF KESKİN on 9.06.2024.
@@ -9,7 +9,7 @@ import UIKit
 
 final class ProductDetailsViewController: UIViewController {
     
-    var presenter : ProductDetailsViewToPresenterProtocol?
+    var presenter : ProductDetailsViewToPresenterDelegate?
     var imageURLs = [String]()
     private var activityView: UIActivityIndicatorView?
     
@@ -128,7 +128,7 @@ extension ProductDetailsViewController: UICollectionViewDelegateFlowLayout {
 }
 
 //MARK: - Presenter Protocols Conformances
-extension ProductDetailsViewController : ProductDetailsPresenterToViewProtocol {
+extension ProductDetailsViewController : ProductDetailsPresenterToViewDelegate {
     
     func setupViewsWith(productsDetails: ProductDetailsModel) {
         DispatchQueue.main.async {[weak self] in
@@ -171,6 +171,8 @@ extension ProductDetailsViewController : ProductDetailsPresenterToViewProtocol {
                 case .urlError(receivedError: _):
                     print(error.errorDescription)
                 case .lastPage:
+                    return
+                case .responseError:
                     return
             }
         }

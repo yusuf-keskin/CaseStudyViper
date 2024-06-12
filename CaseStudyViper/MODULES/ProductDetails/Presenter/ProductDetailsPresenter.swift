@@ -7,17 +7,19 @@
 
 import Foundation
 
-final class ProductDetailsPresenter : ProductDetailsViewToPresenterProtocol {
-    var interactor : ProductDetailsPresentorToInteractorProtocol?
-    weak var view : ProductDetailsPresenterToViewProtocol?
+final class ProductDetailsPresenter : ProductDetailsPresenterProtocol {
+    var interactor : ProductDetailsPresentorToInteractorDelegate?
+    weak var view : ProductDetailsPresenterToViewDelegate?
     var router : ProductDetailsRouterProtocol?
-    
+}
+
+extension ProductDetailsPresenter : ProductDetailsViewToPresenterDelegate {
     func viewDidLoad() {
         interactor?.fetchProductDetails()
     }
 }
 
-extension ProductDetailsPresenter : ProductDetailsInteractorToPresentorProtocol {
+extension ProductDetailsPresenter : ProductDetailsInteractorToPresentorDelegate {
     func interactorDidDownload(productsDetails: ProductDetailsModel) {
         view?.setupViewsWith(productsDetails: productsDetails)
     }

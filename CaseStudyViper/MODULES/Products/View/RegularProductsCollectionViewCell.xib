@@ -221,7 +221,7 @@
     <resources>
         <image name="bolt_blue" width="512" height="512"/>
         <image name="firsatUrunu" width="200" height="200"/>
-        <image name="noImage" width="1665" height="2048"/>
+        <image name="noImage" width="800" height="800"/>
         <image name="star" catalog="system" width="128" height="116"/>
         <systemColor name="systemPinkColor">
             <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

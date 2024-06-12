@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 extension Double {
-
+/// Create a string from double with two digit after .
     func createPriceString() -> String {
         let formatter = NumberFormatter()
         formatter.maximumFractionDigits = 0

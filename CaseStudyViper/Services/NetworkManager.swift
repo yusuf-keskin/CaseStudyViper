@@ -11,6 +11,7 @@ enum NetworkingError : Error, LocalizedError {
     case downloadError(receivedError: Error?)
     case urlError(receivedError: Error?)
     case lastPage
+    case responseError
     
     var errorDescription: String {
         switch self {
@@ -20,6 +21,8 @@ enum NetworkingError : Error, LocalizedError {
                 return "Creating url from string file has failed, error: \(String(describing: receivedError?.localizedDescription))"
             case .lastPage:
                 return "No more data in the endpoint to load"
+            case .responseError:
+                return "URL request returned unecpected status code"
         }
     }
 }
@@ -30,9 +33,11 @@ protocol NetworkManagerProtocol {
 
 final class NetworkManager: NetworkManagerProtocol{
     
-    static let shared = NetworkManager()
+    var session : URLSession
     
-    private init(){}
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
     
     func download<T:Decodable>(type: T.Type, from url: URL) async throws -> T {
 
@@ -41,8 +46,8 @@ final class NetworkManager: NetworkManagerProtocol{
         do {
             let (data, response) = try await session.data(from: url)
             
-            if let response = response as? HTTPURLResponse, response.statusCode >= 200, response.statusCode <= 299 {
-                print("HTTP response code is out of expected range")
+            guard let response = response as? HTTPURLResponse, response.statusCode >= 200, response.statusCode <= 299 else {
+                throw NetworkingError.responseError
             }
             
             let decoder = JSONDecoder()

@@ -18,7 +18,8 @@ final class ProductDetailsRouter : ProductDetailsRouterProtocol {
         let view = ProductDetailsViewController()
         let router = ProductDetailsRouter()
         let presenter = ProductDetailsPresenter()
-        let interactor = ProductDetailsInteractor(networkManager: NetworkManager.shared, productId: productId)
+        let networkManager = NetworkManager()
+        let interactor = ProductDetailsInteractor(networkManager: networkManager, productId: productId)
         
         view.presenter = presenter
         presenter.view = view

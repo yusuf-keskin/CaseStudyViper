@@ -1,5 +1,5 @@
 //
-//  CollectionViewCell.swift
+//  RegularProductsCollectionViewCell.swift
 //  CaseStudyViper
 //
 //  Created by YUSUF KESKİN on 8.06.2024.
@@ -26,7 +26,7 @@ final class RegularProductsCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        productImageView.image = nil
+        productImageView.kf.cancelDownloadTask()
     }
 
     func setupCell(regularProduct:Product){

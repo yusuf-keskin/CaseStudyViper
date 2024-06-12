@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class ProductsViewController: UIViewController {
+final class ProductsViewController: UIViewController, ProductsViewProtocol {
     private var regularPoducts = [Product]()
     private var sponsoredProducts = [Product]()
     
-    var presenter : ProductsViewToPresenterProtocol?
+    var presenter : ProductsViewToPresenterDelegate?
     
     private var activityView: UIActivityIndicatorView?
     
@@ -170,7 +170,7 @@ extension ProductsViewController : UICollectionViewDelegate, UICollectionViewDat
 }
 
 //MARK: - Presenter Protocols Conformances
-extension ProductsViewController : ProductsPresenterToViewProtocol {
+extension ProductsViewController : ProductsPresenterToViewDelegate {
     
     func reloadCollectionViewsWith(error: NetworkingError) {
         DispatchQueue.main.async {[weak self] in
@@ -182,6 +182,8 @@ extension ProductsViewController : ProductsPresenterToViewProtocol {
                     print(error.errorDescription)
                 case .lastPage:
                     showSimpleAlertWith(title: "Hergün yeni ürünler", message: "Yeni ürünler için bizi sık sık ziyaret etmeyi unutmayın")
+                case .responseError:
+                    return
             }
         }
     }

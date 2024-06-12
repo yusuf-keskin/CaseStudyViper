@@ -7,8 +7,8 @@
 
 import Foundation
 
-final class ProductDetailsInteractor : ProductDetailsPresentorToInteractorProtocol {
-    weak var presenter: (any ProductDetailsInteractorToPresentorProtocol)?
+final class ProductDetailsInteractor : ProductDetailsInteractorProtocol {
+    weak var presenter: (any ProductDetailsInteractorToPresentorDelegate)?
 
     let networkManager : NetworkManagerProtocol
     let productId: String
@@ -20,7 +20,7 @@ final class ProductDetailsInteractor : ProductDetailsPresentorToInteractorProtoc
     
     private func fetchProduct(url: URL) async throws -> ProductDetailsModel {
         do {
-            let productDetails = try await NetworkManager.shared.download(type:ProductDetailsModel.self, from: url)
+            let productDetails = try await networkManager.download(type:ProductDetailsModel.self, from: url)
             return productDetails
         } catch (let error) {
             throw error
@@ -30,14 +30,16 @@ final class ProductDetailsInteractor : ProductDetailsPresentorToInteractorProtoc
     private func getProductDetailsURL() -> URL? {
         return URL(string: "http://private-d3ae2-n11case.apiary-mock.com/product?productId=\(productId)")
     }
-    
+}
+
+extension ProductDetailsInteractor: ProductDetailsPresentorToInteractorDelegate {
     func fetchProductDetails() {
         Task {
             do {
                 guard let url = getProductDetailsURL() else { return }
                 let productDetails = try await fetchProduct(url: url)
                 presenter?.interactorDidDownload(productsDetails: productDetails)
-
+                
             } catch (let error ){
                 presenter?.interactorDidDownloadWith(error: .downloadError(receivedError: error))
             }

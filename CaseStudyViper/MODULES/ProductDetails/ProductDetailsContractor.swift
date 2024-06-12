@@ -9,32 +9,41 @@ import Foundation
 import UIKit
 
 //MARK: - View will conform to:
+protocol ProductDetailsViewProtocol {
+    var presenter: ProductDetailsViewToPresenterDelegate? {get set}
+}
+
 ///Presenter to view communication
-protocol ProductDetailsPresenterToViewProtocol: AnyObject {
-    var presenter: ProductDetailsViewToPresenterProtocol? {get set}
+protocol ProductDetailsPresenterToViewDelegate: AnyObject {
     func setupViewsWith(productsDetails : ProductDetailsModel)
     func setupViewsWith(error: NetworkingError)
 }
 
 //MARK: - Presenter will conform to:
-///View to presenter communication
-protocol ProductDetailsViewToPresenterProtocol: AnyObject {
-    var interactor : ProductDetailsPresentorToInteractorProtocol? {get set}
-    var view : ProductDetailsPresenterToViewProtocol? {get set}
+protocol ProductDetailsPresenterProtocol {
+    var interactor : ProductDetailsPresentorToInteractorDelegate? {get set}
+    var view : ProductDetailsPresenterToViewDelegate? {get set}
     var router : ProductDetailsRouterProtocol? {get set}
+}
+
+///View to presenter communication
+protocol ProductDetailsViewToPresenterDelegate: AnyObject {
     func viewDidLoad()
 }
 
 ///Interactor to presenter communication
-protocol ProductDetailsInteractorToPresentorProtocol: AnyObject {
+protocol ProductDetailsInteractorToPresentorDelegate: AnyObject {
     func interactorDidDownload(productsDetails : ProductDetailsModel)
     func interactorDidDownloadWith(error: NetworkingError)
 }
 
 //MARK: - Interactor will conform to:
+protocol ProductDetailsInteractorProtocol {
+    var presenter : ProductDetailsInteractorToPresentorDelegate? {get set}
+}
+
 ///Presenter to interactor communication
-protocol ProductDetailsPresentorToInteractorProtocol: AnyObject {
-    var presenter : ProductDetailsInteractorToPresentorProtocol? {get set}
+protocol ProductDetailsPresentorToInteractorDelegate: AnyObject {
     func fetchProductDetails()
 }
 

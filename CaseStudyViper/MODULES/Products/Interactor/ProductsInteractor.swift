@@ -1,5 +1,5 @@
 //
-//  ProductsCollection_Interactor.swift
+//  ProductsInteractor.swift
 //  CaseStudyViper
 //
 //  Created by YUSUF KESKİN on 6.06.2024.
@@ -7,12 +7,12 @@
 
 import Foundation
 
-final class ProductsInteractor: ProductsPresentorToInteractorProtocol {
+final class ProductsInteractor: ProductsInteractorProtocol {
     
     private var nextPage : String = "1"
     private var currentPage : String = "0"
     
-    weak var presenter : ProductsInteractorToPresentorProtocol?
+    weak var presenter : ProductsInteractorToPresentorDelegate?
     let networkManager : NetworkManagerProtocol
     
     init(networkManager: NetworkManagerProtocol) {
@@ -21,7 +21,7 @@ final class ProductsInteractor: ProductsPresentorToInteractorProtocol {
     
     private func fetchProducts(url: URL) async throws -> ProductsCollectionModel {
         do {
-            let productList = try await NetworkManager.shared.download(type:ProductsCollectionModel.self, from: url)
+            let productList = try await networkManager.download(type:ProductsCollectionModel.self, from: url)
             return productList
         } catch (let error) {
             throw error
@@ -35,43 +35,40 @@ final class ProductsInteractor: ProductsPresentorToInteractorProtocol {
         components.host = "private-d3ae2-n11case.apiary-mock.com"
         components.path = "/listing/\(page)"
         return components.url!
-    }
-    
-    func fetchProductsList() {
-            Task {
-                do {
-                    if currentPage == nextPage {
-                        presenter?.interactorDidDownloadWith(error: NetworkingError.lastPage)
-                        return
-                    }
-                    
-                    guard let url = getProductsListLink(page: nextPage) else { throw NetworkingError.urlError(receivedError: nil) }
-                    print("Network reguest")
-                    let productsList = try await fetchProducts(url: url)
-                    var regularProductsArray = [Product]()
-                    var sponsoredProductsArray = [Product]()
-                    
-                    if let unwappedRegularProducts = productsList.regularProducts {
-                        regularProductsArray = unwappedRegularProducts
-                    }
-                    
-                    if let unwappedSponsoredProducts = productsList.sponsoredProducts {
-                        sponsoredProductsArray = unwappedSponsoredProducts
-                    }
-                    
-                    if let newNextPage = productsList.nextPage {
-                        nextPage = newNextPage
-                    }
-                    
-                    if let newCurentPage = productsList.page {
-                        currentPage = newCurentPage
-                    }
-                    
-                    presenter?.interactorDid(regularProducts: regularProductsArray, sponsoredProducts: sponsoredProductsArray)
-                } catch (let error ){
-                    presenter?.interactorDidDownloadWith(error: .downloadError(receivedError: error))
-                }
-            }
-    }
+    }    
 }
 
+extension ProductsInteractor : ProductsPresentorToInteractorDelegate {
+    func fetchProductsList() {
+        Task {
+            do {
+                if currentPage == nextPage {
+                    presenter?.interactorDidDownloadWith(error: NetworkingError.lastPage)
+                    return
+                }
+                
+                guard let url = getProductsListLink(page: nextPage) else { throw NetworkingError.urlError(receivedError: nil) }
+                print("Network reguest")
+                let productsList = try await fetchProducts(url: url)
+                var regularProductsArray = [Product]()
+                var sponsoredProductsArray = [Product]()
+                
+                regularProductsArray = productsList.regularProducts
+
+                if let unwappedSponsoredProducts = productsList.sponsoredProducts {
+                    sponsoredProductsArray = unwappedSponsoredProducts
+                }
+                
+                if let newNextPage = productsList.nextPage {
+                    nextPage = newNextPage
+                }
+
+                    currentPage = productsList.page
+
+                presenter?.interactorDidDownloadWith(regularProducts: regularProductsArray, sponsoredProducts: sponsoredProductsArray)
+            } catch (let error ){
+                presenter?.interactorDidDownloadWith(error: .downloadError(receivedError: error))
+            }
+        }
+    }
+}
