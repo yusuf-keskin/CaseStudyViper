@@ -10,6 +10,7 @@ import UIKit
 final class ProductsViewController: UIViewController, ProductsViewProtocol {
     private var regularPoducts = [Product]()
     private var sponsoredProducts = [Product]()
+    var didShownLastPageAlert : Bool = false
     
     var presenter : ProductsViewToPresenterDelegate?
     
@@ -181,7 +182,9 @@ extension ProductsViewController : ProductsPresenterToViewDelegate {
                 case .urlError(receivedError: _):
                     print(error.errorDescription)
                 case .lastPage:
+                    guard didShownLastPageAlert == false else { return }
                     showSimpleAlertWith(title: "Hergün yeni ürünler", message: "Yeni ürünler için bizi sık sık ziyaret etmeyi unutmayın")
+                    didShownLastPageAlert = true
                 case .responseError:
                     return
             }
